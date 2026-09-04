@@ -20,10 +20,8 @@
 
 ### 1) 首次安装管家插件
 
-```bash
-# 已有源码/包时（本机开发）
-dsh plugin --profile web add link:C:/path/to/dsh-sync-manager
-# 或从仓库（该仓库同时是插件包，含 package.json）
+
+# 从仓库（该仓库同时是插件包，含 package.json）
 dsh plugin --profile web add github:yu-tengguo/dsh-sync-manager
 ```
 
