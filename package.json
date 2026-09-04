@@ -1,0 +1,27 @@
+{
+  "name": "dsh-sync-manager",
+  "version": "0.1.0",
+  "description": "DSH 插件与技能管家：盘点/同步/一键还原 插件与 skills（GitHub 备份，token 绝不上传）",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "core",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "license": "MIT"
+}
