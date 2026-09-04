@@ -1,0 +1,17 @@
+# deps / fixtures
+node_modules/
+.pnpm-store/
+
+# generated
+test-fixture-repo/
+sample-snapshot.json
+*.log
+
+# os
+.DS_Store
+Thumbs.db
+
+# secrets (guard: never commit)
+.env
+.env.*
+*.credentials.yaml
