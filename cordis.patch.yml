@@ -1,0 +1,5 @@
+# dsh-sync-manager bundle patch: 装载管家插件本体。
+# 该行让 Loader 以 'dsh-sync-manager' 为名解析本包 host 入口（lib/index.js）。
+- insert:
+    - id: sync-manager
+      name: 'dsh-sync-manager'
