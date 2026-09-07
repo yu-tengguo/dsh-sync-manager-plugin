@@ -1,0 +1,43 @@
+{
+  "id": "t11-w-o-round2",
+  "task": "T11 Windows O-equivalent (host & Manager lifecycle) round-2 unrestricted retest",
+  "date": "2026-09-07",
+  "machine": {
+    "os": "Windows 11 (build 10.0.28000.2704)",
+    "arch": "x64",
+    "node": "v25.8.0 (nvm)",
+    "dsh": "0.1.1-rc.2 (@deepseek-ai/dsh)",
+    "gui": "isolated DSH_HOME C:/新建文件夹/dsh-sync-manager-plugin/t11w/dsh-home on 127.0.0.1:3190",
+    "executionChannel": "unrestricted (danger-full-access) after user approval; round 1 was sandboxed (spawn EPERM)"
+  },
+  "results": [
+    {
+      "id": "o9",
+      "label": "GUI install worker (hostops spawn pnpm via /sync/api/install)",
+      "round1": "FAIL (spawn EPERM under sandbox)",
+      "round2": "PASS",
+      "evidence": {
+        "install": "dsh-better-sidebar@0.18.0 -> ok:true, addedBundles:[dsh-better-sidebar], bundles converged to 4 entries",
+        "remove": "/sync/api/remove dsh-better-sidebar -> ok:true, bundles back to 3 (base+sync-manager)",
+        "log": "t11w/out/w2-gui-boot2.log",
+        "pkg": "registry npmmirror; pnpm 11.7.0"
+      },
+      "notes": [
+        "Store mismatch fixed by relinking once under unrestricted context: sandbox-era links pointed at workspace-root .pnpm-store because AppData store was unwritable there; unrestricted pnpm resumed default AppData store -> ERR_PNPM_UNEXPECTED_STORE -> pnpm install --force resolved.",
+        "Removed npm_config_store_dir/npm_config_cache env noise from server launch."
+      ]
+    },
+    {
+      "id": "o10",
+      "label": "Terminal PTY real spawn (node-pty)",
+      "round1": "NOT-RUN (spawn EPERM under sandbox; prebuild win32-x64 load OK)",
+      "round2": "PASS",
+      "evidence": {
+        "script": "require('node-pty'); pty.spawn('cmd.exe', [], {cols:80,rows:24}) then write 'echo pty-spawn-ok'",
+        "result": "cmd banner + command echo captured (pty-spawn-ok), clean kill, exit 0",
+        "log": "t11w/out/w2-pty.log"
+      }
+    }
+  ],
+  "conclusion": "Both previously blocked host/Manager items PASS on the unrestricted execution channel; PTY runtime closure (ConPTY) confirmed."
+}

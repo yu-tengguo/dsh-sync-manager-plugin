@@ -83,8 +83,19 @@
 | 失败重试与已成功项保留 / 普通卸载后 Profile 可启动 | ✅ |
 | 交付 docs + 机器记录 + 修复 commit | ✅（本文档 + t11-w-o json + commit 1eee38e） |
 
+## 2026-09-07 第二轮：不受限执行通道复测（补齐两项 NOT-RUN）
+用户确认后，以「不受限执行」通道重跑此前被会话沙箱挡下的两项，**均通过**：
+- **GUI 安装/卸载 worker**（/sync/api/install → hostops spawn pnpm）：`安装 dsh-better-sidebar@0.18.0` 成功
+  `{"ok":true,"addedBundles":["dsh-better-sidebar"]}`；`/sync/api/remove` 成功（bundles 收敛回 base）。
+  途中处理两个真实环境问题并记录：① 沙箱时期 pnpm 因 AppData store 不可写而把依赖链到工作区根 `.pnpm-store`，
+  不受限后 pnpm 恢复默认 store（AppData）→ `ERR_PNPM_UNEXPECTED_STORE`；以 `pnpm install --force` 在不受限下重链一次解决
+  （同类主机关机/重启或换用户时如复现，照此处理即可）。② 原环境变量干扰已移除（npm_config_store_dir 等）。
+- **node-pty PTY 真实 spawn**：`require('node-pty')` + `pty.spawn('cmd.exe')` 实跑成功，命令回显与输出捕获正常（exit 0）——
+  终端输出/resize/reconnect 所依赖的 PTY 闭包在真实 Windows 上成立（prebuild win32-x64 + ConPTY）。
+- 证据：t11w/out/w2-pty.log；机器记录 `repo-tools/t11-w-o-round2-2026-09-07.json`。
+
 ## 下一步缺口
-- 无沙箱 Windows 主机上复测 GUI 安装 worker 与终端（node-pty spawn）。
+- （已闭环）GUI 安装 worker 与终端 PTY 已在不受限通道复测通过；常规 Windows 桌面复跑可选做最终确认。
 - 本公开仓库是 dsh-sync-manager@0.1.0（简单同步管家）；T11 issue 所述更完整的 Manager
   （Built-in release.json 收敛等）不在本公开仓库内，未能据此实测（见机器记录 productScopeNote）。
 - #18/#19（T17/T18 真实端到端验收）与最终发布验收仍未完成。

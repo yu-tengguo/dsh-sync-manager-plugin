@@ -1,0 +1,32 @@
+{
+  "id": "t11-w-p-round2",
+  "task": "T11 Windows P-equivalent (browsers) round-2 unrestricted retest",
+  "date": "2026-09-07",
+  "machine": {
+    "os": "Windows 11 (build 10.0.28000.2704)",
+    "chrome": "152 (C:/Program Files/Google/Chrome/Application/chrome.exe)",
+    "egoTarball": "dsh-ego-browser@0.8.0 (npm public artifact; SHA256 d71035c61b586d72e3d78470f05122f453557b065f53341f7d222e5e8004048b)",
+    "executionChannel": "unrestricted (danger-full-access); isolated LOCALAPPDATA + EGO_LINUX_PROFILE under t11w/ego-local, headless=1"
+  },
+  "results": [
+    {
+      "id": "p6",
+      "label": "Ego 0.8.0 real Windows run (launch -> task space/tab -> navigate -> snapshot -> eval -> screenshot)",
+      "round1": "NOT-RUN (DevTools 20s timeout; sandbox spawn EPERM on 'which')",
+      "round2": "PASS",
+      "evidence": {
+        "tab": "openOrReuseTab(http://127.0.0.1:3961/) -> targetId ok, active",
+        "snapshot": "contains 't11w fixture index' + Chinese + emails",
+        "eval": "document.title+'|'+h1.innerText -> 't11w fixture|t11w fixture index'",
+        "screenshot": "PNG 41,629 B -> t11w/out/w2-ego-shot.png",
+        "log": "t11w/out/w2-ego-run2.log"
+      },
+      "rootCausesFixed": [
+        "sandbox spawn EPERM -> unrestricted channel",
+        "ego-linux runtime uses Linux binary candidate names on Windows -> set EGO_LINUX_CHROME to chrome.exe absolute path",
+        "goto before session: need taskSpaces.useOrCreate + browser.openOrReuseTab first ('no active tab to attach session' otherwise)"
+      ]
+    }
+  ],
+  "conclusion": "Ego 0.8.0 navigation/snapshot/JS/screenshot fully usable on real Windows Chrome 152. Pinned upstream commit d485d085… remains publicly unavailable (recorded blocker unchanged)."
+}

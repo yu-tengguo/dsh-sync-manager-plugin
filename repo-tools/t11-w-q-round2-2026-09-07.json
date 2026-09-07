@@ -1,0 +1,25 @@
+{
+  "id": "t11-w-q-round2",
+  "task": "T11 Windows Q-equivalent (Skills + CPython) round-2 unrestricted retest",
+  "date": "2026-09-07",
+  "machine": {
+    "os": "Windows 11 (build 10.0.28000.2704)",
+    "screenshotSkill": "official openai/skills curated copy (11 files incl. scripts/take_screenshot.ps1)",
+    "executionChannel": "unrestricted (danger-full-access)"
+  },
+  "results": [
+    {
+      "id": "q4",
+      "label": "screenshot skill Windows branch: capture of a task-created window",
+      "round1": "NOT-RUN (no enumerable task-created window in sandboxed session; user windows off-limits)",
+      "round2": "PASS",
+      "evidence": {
+        "window": "chrome --app=http://127.0.0.1:3961/ (dedicated user-data-dir), title 't11w fixture', MainWindowHandle 461528",
+        "helper": "powershell -File take_screenshot.ps1 -WindowHandle 461528 -Path t11w/out/w-q-screenshot-win.png -> exit 0",
+        "png": "111,301 B (t11w/out/w-q-screenshot-win.png)"
+      },
+      "boundary": "only the task-created window was captured; no user desktop/window was touched"
+    }
+  ],
+  "conclusion": "Screenshot Windows branch validated on a real enumerable window. M-side pinned inputs (web-scraper 563c776…, find-skills H, t11-m-lock-v2.json) still publicly unavailable (recorded blocker unchanged)."
+}

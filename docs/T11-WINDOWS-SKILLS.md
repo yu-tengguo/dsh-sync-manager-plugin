@@ -80,3 +80,12 @@
 ## 缺口
 - M/H 固定候选一旦可从 macOS 侧取得 → 以精确身份复跑 web-scraper（44/33/17 等价）与 find-skills 旅程。
 - 无沙箱交互桌面复测 screenshot 窗口捕获。
+
+## 2026-09-07 第二轮：不受限执行通道复测（screenshot 真实窗口捕获 PASS）
+用户确认后，以不受限执行通道重跑此前 NOT-RUN 的「截图」分支：
+- 启动任务自建的 Chrome `--app=http://127.0.0.1:3961/`（专用 profile），窗口可枚举
+  （title "t11w fixture"，MainWindowHandle=461528——不受限下不再出现"无任务自建窗口"）。
+- 官方 helper `take_screenshot.ps1 -WindowHandle <hwnd> -Path …` 实跑成功（exit 0），
+  输出 `t11w/out/w-q-screenshot-win.png`（111,301 B）→ Windows 分支截图技能在真实窗口上成立。
+- 证据：w-q-screenshot-win.png；机器记录 `repo-tools/t11-w-q-round2-2026-09-07.json`。
+- （未触碰任何用户真实窗口/桌面；全程只捕获本任务自建窗口。）

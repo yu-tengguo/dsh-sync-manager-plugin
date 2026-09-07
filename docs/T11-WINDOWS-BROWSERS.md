@@ -51,6 +51,18 @@
 | 真实 Windows Chrome 功能/围栏等价验证 | ✅（loopback+公网匿名页、eval、重定向、截图显式路径、错误可读） |
 | 隐私门禁 | ✅ 未捕获任何用户窗口 |
 
+## 2026-09-07 第二轮：不受限执行通道复测（Ego 0.8.0 真实运行 PASS）
+用户确认后，以不受限执行通道重跑 dsh-ego-browser@0.8.0（隔离 LOCALAPPDATA/EGO_LINUX_PROFILE/headless）：
+- Chrome 启动成功（此前 DevTools 20s 超时的三个根因定位并解决）：
+  ① 会话沙箱 `spawn EPERM`（which/子进程全被拒）→ 不受限通道；
+  ② ego-linux 运行时自带候选名是 Linux 命名（google-chrome 等），Windows 必须 `EGO_LINUX_CHROME=C:\Program Files\Google\Chrome\Application\chrome.exe`；
+  ③ goto 前需先 `taskSpaces.useOrCreate` + `browser.openOrReuseTab` 建立会话（否则 "no active tab to attach session"）。
+- 实测通过：任务空间+tab 建立、真实导航 fixture 页、`page.snapshot()` 读到页面内容（含中文/邮箱）、
+  `page.evaluate` 求值（title/h1）、`page.screenshot()` 输出 PNG（41,629 B，证据 w2-ego-shot.png）。
+- 即：Ego 0.8.0（npm 公开产物，SHA256 d71035c6…）在本 Windows 真实 Chrome 152 上**导航/快照/JS/截图全部可用**；
+  上游 pinned commit d485d085… 仍公开缺失（blocker 不变，见上表）。
+- 证据：t11w/out/w2-ego-run2.log、w2-ego-shot.png；机器记录 `repo-tools/t11-w-p-round2-2026-09-07.json`。
+
 ## 缺口
-- 无沙箱 Windows 桌面会话复测 Ego 0.8.0 Chrome 启动/围栏（预计需 5 分钟实机）。
+- （已闭环）Ego 0.8.0 Chrome 启动与围栏已在不受限通道实跑通过。
 - 两个 pinned commit 一旦可从 macOS 侧取得（或上游公开），补执行即可对齐 macOS PASS。
