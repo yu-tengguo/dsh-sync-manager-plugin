@@ -1,0 +1,62 @@
+{
+  "task": "t11-w-q",
+  "date": "2026-09-07",
+  "issue": 12,
+  "mirror": 37,
+  "title": "T11 Windows part Q: four skills + CPython 3.14 on real Windows DSH",
+  "environment": {
+    "os": "Windows_NT 10.0.28000.0 (AMD64)",
+    "dshCli": "0.1.1-rc.2",
+    "isolatedDshHome": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\dsh-home",
+    "isolatedAgentsHome": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\agents-home",
+    "dailyAgentsSkills": "read-only reference only (C:\\Users\\ddnin\\.agents\\skills)"
+  },
+  "fixedInputs": {
+    "amazon_d607d661": "public, fetched (SKILL.md sha256 222978b4146e2d328fb82e265b1591c1c0625d5e578e2cd4fe07e8b79fef1658)",
+    "screenshot_49f948fa": "public, fetched (11 files; Windows helper scripts/take_screenshot.ps1 present)",
+    "web_scraper_563c7767_m": "PUBLIC SOURCE MISSING (blocker)",
+    "t11_m_lock_v2_cb88888f": "PUBLIC SOURCE MISSING (blocker)",
+    "find_skills_h_25fd52a3": "PUBLIC SOURCE MISSING (blocker; local candidate only)"
+  },
+  "cpython314": {
+    "version": "3.14.7",
+    "source": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-amd64.zip (official layout zip, no installer)",
+    "sha256": "ac1a727a71738e11de80b76e975f9b8a258aea6412bfc31696b929d59c6aafd0",
+    "location": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\cp314\\py314",
+    "pip": "26.2.1 bundled",
+    "pipCheck": "No broken requirements found",
+    "closure": ["beautifulsoup4-4.15.0", "certifi-2026.7.22", "charset_normalizer-3.5.1", "click-8.5.0", "idna-3.19", "lxml-6.1.3", "numpy-2.5.3", "pandas-3.0.5", "python_dateutil-2.9.0.post0", "requests-2.34.2", "six-1.17.0", "soupsieve-2.9.2", "typing_extensions-4.16.0", "tzdata-2026.3", "urllib3-2.7.0"],
+    "lock": "wheels-sha256.lock (15 entries, own lock; M official lock publicly unavailable)",
+    "sandboxAdaptation": "sitecustomize shim replaces tempfile.mkdtemp/mkstemp (sandbox denied restricted-ACL temp dirs); environment-only, unrelated to skill"
+  },
+  "webScraperRuns": [
+    { "cmd": "scrape --selector h1,p", "exit": 0, "result": "3 elements" },
+    { "cmd": "scrape json/csv explicit outputs", "exit": 0, "result": "structured json + csv written" },
+    { "cmd": "links --internal-only", "exit": 0, "result": "7 internal links" },
+    { "cmd": "emails --depth 1", "exit": 0, "result": "4 emails (after PYTHONIOENCODING=utf-8)" },
+    { "cmd": "emails --depth 2 recursion", "exit": 0, "result": "depth-2 crawl; mailto-fetch error visible but non-fatal" },
+    { "cmd": "structured article/product", "exit": 0, "result": "json files correct" },
+    { "cmd": "failure /error500", "exit": 1, "result": "requests HTTPError 500 visible" },
+    { "cmd": "retry after failure", "exit": 0, "result": "ok" },
+    { "cmd": "redirect chain 3 hops", "exit": 0, "result": "terminal content reached" },
+    { "cmd": "public https://example.com", "exit": 0, "result": "h1 Example Domain" }
+  ],
+  "windowsDefectsFound": [
+    { "id": "q1", "title": "emails prints U+2022 -> GBK console UnicodeEncodeError exit 1", "workaround": "PYTHONIOENCODING=utf-8 / PYTHONUTF8=1", "patchNote": "local candidate may patch click.echo to force utf-8" },
+    { "id": "q2", "title": "recursive crawl treats mailto: href as page URL (error caught & visible, non-fatal)" },
+    { "id": "q3", "title": "BeautifulSoup get_text concatenation yields email noise (webmaster@page.acmenext); true mailto values still present" }
+  ],
+  "dshLoad": [
+    { "check": "four skills under own agents-home", "pass": true },
+    { "check": "Manager inventory reads own root only (4 skills, not daily 5)", "pass": true },
+    { "check": "Host/GUI boots with skill files (non-blocking)", "pass": true },
+    { "check": "full restart keeps skills (persistence)", "pass": true },
+    { "check": "scanner quirk: flat *.md in skills root counted as skill (5->4 after moving README)", "pass": "observed, noted" }
+  ],
+  "branches": {
+    "amazon": "loaded; anonymous public capability demonstrated via built-in Chrome on amazon.com books bestsellers (titles/ratings/prices, no login, no robot check); agentic workflow NOT-RUN (no API key permitted)",
+    "screenshot": "official Windows helper present; no permission prompts at install; actual capture NOT-RUN - no enumerable task-owned window in session, user windows off-limits per privacy gate",
+    "find-skills": "loaded/persistent as local candidate; official discovery->preview->confirm->install journey NOT-RUN (feature of larger Manager not in public repo; fixed source missing)"
+  },
+  "deliverables": ["docs/T11-WINDOWS-SKILLS.md (repo)", "repo-tools/t11-w-q-2026-09-07.json (repo)", "cp314 interpreter + wheels lock + logs (workspace)"]
+}

@@ -1,0 +1,43 @@
+{
+  "task": "t11-w-p",
+  "date": "2026-09-07",
+  "issue": 12,
+  "mirror": 36,
+  "title": "T11 Windows part P: browser candidates on real Windows DSH",
+  "environment": {
+    "os": "Windows_NT 10.0.28000.0 (AMD64)",
+    "chrome": "152.0.7977.65 at C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "edge": "152.0.4191.53 at C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "dshCli": "0.1.1-rc.2"
+  },
+  "candidates": {
+    "ego_pinned_d485d085": { "reachable": false, "evidence": "commits API 422; git object 404; codeload 404 across upstream Fisfzy/dsh-ego-browser incl 15 forks; see RESEARCH-P.md" },
+    "dsh_ego_browser_0.8.0_npm": { "reachable": true, "sha256": "d71035c61b586d72e3d78470f05122f453557b065f53341f7d222e5e8004048b", "installed": "C:\\Users\\ddnin\\.dsh\\profiles\\web\\node_modules\\dsh-ego-browser (read-only reference)", "chinese_note": "installed runtime of this session's ego toolchain; dsh plugin manager reference only, not modified" },
+    "browser_tool_0.2.0_pinned_7e1eb31": { "reachable": false, "evidence": "npm registry/npmmirror/GH Packages 404; repo commits API 422; codeload 404; only unpinned head a0770522..." },
+    "local_browser_verification": { "stack": "built-in Chrome 152 (harness)", "note": "not the ego runtime; identity recorded, results not attributed to candidates" }
+  },
+  "egoLaunchAttempts": {
+    "attempts": 3,
+    "error": "Chrome did not expose a DevTools port within 20000ms (chrome.mjs waitForEndpoint)",
+    "classification": "environment-limited (session sandbox: node child spawn EPERM; non-interactive DevTools bind)", 
+    "notProductVerdict": true
+  },
+  "realChromeFenceChecks": [
+    { "check": "navigate+render+snapshot UTF-8 fixture (127.0.0.1:3961)", "pass": true },
+    { "check": "click link navigation", "pass": true },
+    { "check": "page JS eval (title/innerText/origin)", "pass": true },
+    { "check": "same-origin POST fetch -> 200", "pass": true },
+    { "check": "redirect chain 3 hops followed to terminal", "pass": true },
+    { "check": "screenshot to explicit path (w-p-builtin-chrome-fixture.png)", "pass": true },
+    { "check": "cross-origin page fetch https://api.github.com/zen -> 200", "pass": true },
+    { "check": "public anonymous https://example.com loads", "pass": true },
+    { "check": "HTTP 500/404 errors surfaced as readable failures", "pass": true },
+    { "check": "no user-owned window captured (privacy gate)", "pass": true }
+  ],
+  "notRunOrBlocked": [
+    "Ego 0.8.0 chrome launch & fences under own process (sandbox/DevTools environment limits)",
+    "browser-tool pinned candidate (not published)",
+    "download/file fence assertions via tool stack (no observable artifact path)"
+  ],
+  "deliverables": ["docs/T11-WINDOWS-BROWSERS.md (repo)", "t11w/candidates/RESEARCH-P.md (workspace evidence)"]
+}
