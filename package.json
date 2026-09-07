@@ -15,6 +15,9 @@
     "cordis.patch.yml",
     "README.md"
   ],
+  "dependencies": {
+    "schemastery": "3.18.0"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
