@@ -1,0 +1,97 @@
+{
+  "task": "t11-w-o",
+  "date": "2026-09-07",
+  "issue": 12,
+  "mirror": 35,
+  "title": "T11 Windows part O: host & Manager lifecycle on real Windows DSH",
+  "environment": {
+    "os": "Windows_NT 10.0.28000.0 (AMD64)",
+    "account": "ddnin",
+    "node": "v25.8.0",
+    "pnpm": "11.7.0",
+    "git": "2.45.1.windows.1",
+    "dshCliVersion": "0.1.1-rc.2",
+    "dshCliPath": "C:\\Users\\ddnin\\AppData\\Local\\nvm\\v25.8.0\\node_modules\\@deepseek-ai\\dsh",
+    "note": "macOS issues bound DSH 0.1.2-rc.1; actual Windows CLI here is 0.1.1-rc.2 - bound as-is, not claimed as rc.1."
+  },
+  "isolation": {
+    "testRoot": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w",
+    "dshHome": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\dsh-home",
+    "profile": "web",
+    "guiPort": 3190,
+    "rawEvidence": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\out",
+    "dailyProfileTouched": false
+  },
+  "installs": [
+    {
+      "step": "npm pack of public repo (commit fd92651 + local fixes)",
+      "pack": "dsh-sync-manager-0.1.0.tgz",
+      "sha256": "FC88240EF814E07058C72D627E199E91723B170FE4DAA09C7EFAC9DCA9D10DBC",
+      "files": 12,
+      "packedFrom": "C:\\新建文件夹\\dsh-sync-manager-plugin\\repo"
+    },
+    {
+      "step": "official CLI install into isolated profile",
+      "command": "dsh plugin --profile web add file:C:/.../dsh-sync-manager-0.1.0.tgz",
+      "exit": 0,
+      "result": "installed; profile package.json gained dsh-sync-manager dependency"
+    }
+  ],
+  "bootSequence": [
+    { "boot": 1, "state": "fresh profile, no plugins; GUI up at 127.0.0.1:3190" },
+    { "boot": 2, "state": "after adding public 0.1.0 pack: FAILED - plugin tree failed to load: ERR_MODULE_NOT_FOUND 'schemastery' imported by dsh-sync-manager/lib/index.js", "defect": "d1" },
+    { "boot": 3, "state": "after package.json fix (dependencies.schemastery 3.18.0): OK; card + status work" },
+    { "boot": 5, "state": "after live-settings fix: settings.yaml overrides effective on status after restart" },
+    { "boot": 6, "state": "after dsh-better-sidebar@0.18.0 install (build ignored): OK; ui-sidebar entry enabled; node-pty prebuild win32-x64 loads (require OK)" },
+    { "boot": 7, "state": "after sidebar uninstall: OK - manager card still present; profile boots (uninstall lifecycle)" },
+    { "boot": 8, "state": "final pack FC88...; status repo yu-tengguo/dsh-sync-manager@main (public), credential configured; live settings edit repoName -> dsh-sync-manager-plugin reflected WITHOUT restart" }
+  ],
+  "guiChecks": [
+    { "check": "plugin card '插件与技能管家' present under 设置 -> 插件 -> 插件配置", "pass": true },
+    { "check": "status endpoint shows isolated DSH home, repo line, credential state", "pass": true, "evidence": "w-o-manager-status.png" },
+    { "check": "snapshot inventory on isolated profile: 2 npm plugins, 0 presets, 5 skills, 42 files estimated", "pass": true },
+    { "check": "plugin list shows sync-manager enabled/mounted", "pass": true },
+    { "check": "GUI save-PAT stores synthetic token into isolated .credentials.yaml refs only", "pass": true },
+    { "check": "network read failure not shown as empty catalog: diff with invalid token -> HTTP 401 Bad credentials surfaced", "pass": true },
+    { "check": "cross-origin/validation error paths", "pass": "covered by host-smoke mocks (not rerun here; see notes)" },
+    { "check": "GUI install worker (install button)", "result": "NOT-RUN/blocked: hostops spawn('pnpm', stdio pipe) -> spawn EPERM under session pwsh sandbox pipe policy; same op succeeded via official CLI", "note": "sandbox limitation, not product defect; needs unsandboxed Windows retest" }
+  ],
+  "settingsPersistence": {
+    "file": "C:\\新建文件夹\\dsh-sync-manager-plugin\\t11w\\dsh-home\\settings.yaml",
+    "schema": "top-level namespace keys (sync-manager: repoOwner/repoName/branch/isPrivate)",
+    "persist": true,
+    "restart": true,
+    "liveWatch": true,
+    "oldSnapshot": "v0.1.0 host read apply-time config only; settings-file edits had no effect until restart and even then were ignored",
+    "fixedIn": "commit 1eee38e (lib/index.js reads scope?.get?.() ?? baseCfg per request)"
+  },
+  "defectsFixed": [
+    {
+      "id": "d1",
+      "title": "clean-profile boot failure: undeclared bare import 'schemastery'",
+      "detail": "public dsh-sync-manager@0.1.0 declares no runtime dependencies yet lib/index.js imports bare 'schemastery' (line 5). On the daily profile it resolved only via host/other-plugin hoisting; on a clean isolated profile the whole plugin tree failed to load and dsh web aborted (boot 2). Fixed by declaring exact dependency schemastery@3.18.0.",
+      "fixCommit": "1eee38e"
+    },
+    {
+      "id": "d2",
+      "title": "settings-file edits ignored by host (fixed snapshot cfg)",
+      "detail": "host gateway read a closure over apply-time config; repoOwner/repoName/branch edits in settings.yaml were persisted but never effective. Fixed to read the live registered settings scope per request.",
+      "fixCommit": "1eee38e"
+    }
+  ],
+  "sidebar": {
+    "candidate": "dsh-better-sidebar@0.18.0 (npm latest; matches T11-O pin)",
+    "install": "official CLI dsh plugin add succeeded with ERR_PNPM_IGNORED_BUILDS (node-pty@1.1.0 build ignored, exit 1 reported by CLI wrapper)",
+    "nodePty": "node-pty@1.1.0 ships prebuilds/win32-x64 (pty.node/conpty) - require('node-pty') loaded OK without build; build script itself cannot run under sandbox (spawn EPERM)",
+    "hostEntry": "ui-sidebar enabled after restart; GUI healthy",
+    "terminal": "NOT-RUN: PTY spawn (node-pty) blocked by session sandbox (spawn EPERM); needs unsandboxed Windows retest for output/resize/reconnect",
+    "uninstall": "official CLI remove exit 0; profile boots fine afterwards (manager preserved)"
+  },
+  "notRunOrBlocked": [
+    "GUI card install worker (spawn EPERM sandbox; CLI path verified instead)",
+    "terminal output/resize/reconnect via node-pty (sandbox spawn EPERM)",
+    "real GitHub write operations (no real credentials used; boundaries forbid)",
+    "host-smoke.mjs regression rerun (test hardcodes the daily machine install path C:/Users/ddnin/.dsh/profiles/web; not applicable to isolated profile)"
+  ],
+  "productScopeNote": "public repo dsh-sync-manager@0.1.0 is the simple sync-manager plugin; the larger evolved Manager described in T11 issues (release.json built-in convergence, 633 Node files, …) is not present in this public repo, so only artifacts actually present were verified."
+}
