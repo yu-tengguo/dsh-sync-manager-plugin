@@ -1,0 +1,93 @@
+{
+  "task": "T11-U",
+  "issue": 41,
+  "round": 3,
+  "status": "wip",
+  "date": "2026-09-08",
+  "handoff": {
+    "archive": "dsh-sync-windows-correction-c881ac7.zip",
+    "sha256": "79961a9246386b70ab16e5af5b0d0d210e3791cdd44328ece3918e9b91fe92a3"
+  },
+  "environment": {
+    "node": "22.23.2",
+    "dsh": "0.1.2-rc.1",
+    "hostMode": "headless host via `dsh --profile web --patch <patch.yml>` (webserver + web-runtime{openBrowser:false,printUrl:false,surfaceContext:true} + insert probe row)",
+    "isolation": "independent $TASK_ROOT per candidate x browser (DSH_HOME/HOME/LOCALAPPDATA/Profile/output); official `dsh plugin --profile web add <exact tarball>` via ASCII junction path",
+    "browsers": { "chrome": "152.0.7977.65", "edge": "152.0.4191.53" },
+    "note": "local-unpublished candidates; installer/uninstaller side effects on the real machine apply; screenshots are task-created pages only"
+  },
+  "candidates": [
+    {
+      "id": "dsh-ego-browser@0.8.2",
+      "commit": "c156b9164fb1b9d7f88c40a993f1a890b1763317",
+      "tarballSha256": "20099e8e…",
+      "presetClaimed": "ego-browser",
+      "actual": "no agentPreset (roster: standard/ptc/minimal/cordis); 32 ego_* tools registered under roster standing scopes",
+      "installExit": 0
+    },
+    {
+      "id": "@yu-tengguo/dsh-browser-tool@0.2.0",
+      "commit": "9d64e520…",
+      "tarballSha256": "9f9f3b76…",
+      "preset": "yu-tengguo-browser-tool",
+      "tools": ["browser_act", "browser_close", "browser_navigate", "browser_screenshot", "browser_snapshot", "browser_status"],
+      "installExit": 0
+    }
+  ],
+  "browserToolResults": {
+    "method": "probe via ctx.tools.get(name, standingScope) on formal host registry; receipts written by probe",
+    "chrome": {
+      "receipt": "$TASK_ROOT/out/receipt5.json (raw kept outside repo)",
+      "presetSelectable": true, "defaultPreset": "standard", "evalExposed": false,
+      "publicNavigate": "pass", "domRead": "pass", "screenshotOk": "pass (11931 B PNG at package-owned output …/browser-tool/output/t11u/page.png)",
+      "screenshotPathFence": "pass (SCREENSHOT_TRAVERSAL_BLOCKED)",
+      "refresh": "pass",
+      "typeClick": "pass (bing 'DeepSeek' -> result title 'DeepSeek - 搜索', URL redacted by product)",
+      "privateFirstRequest": "pass (NETWORK_PRIVATE_BLOCKED)",
+      "metadataBlocked": "pass (metadata.google.internal + 169.254.169.254 both blocked)",
+      "evalDefaultOff": "pass (PAGE_EVAL_DISABLED without allowPageEval)",
+      "loopbackTrapHits": 0,
+      "stopIdempotent": "pass (close1 + close2)",
+      "restartSameProfile": "pass",
+      "profileIsolated": true, "settingsAbsent": true, "userPresetCopyAbsent": true,
+      "download": "not-run (no controlled public attachment element; loopback product-blocked so no local fixture)",
+      "iframeOopifPopupWorkerCacheRedirect": "not-run (no controlled public fixture)"
+    },
+    "edge": {
+      "receipt": "$TASK_ROOT/out/receipt.json (raw kept outside repo)",
+      "presetSelectable": true, "defaultPreset": "standard", "evalExposed": false,
+      "publicNavigate": "pass (attempts=1: one cold-start retry then ok)",
+      "domRead": "pass", "screenshotOk": "pass (11848 B PNG at …/browser-tool/output/t11u/page.png)",
+      "screenshotPathFence": "pass", "refresh": "pass", "typeClick": "pass",
+      "privateFirstRequest": "pass", "metadataBlocked": "pass", "evalDefaultOff": "pass",
+      "loopbackTrapHits": 0, "stopIdempotent": "pass", "restartSameProfile": "pass",
+      "profileIsolated": true, "settingsAbsent": true, "userPresetCopyAbsent": true,
+      "download": "not-run (same reason as chrome)",
+      "iframeOopifPopupWorkerCacheRedirect": "not-run (no controlled public fixture)"
+    }
+  },
+  "egoBrowserResults": {
+    "installed": true,
+    "toolsVisible": true,
+    "scopeDiscovery": "ego_* visible under standing scopes of standard(57)/ptc(57)/minimal(34)/cordis(64) rosters (32 ego tools each)",
+    "admissionVerified": [
+      "ego_screenshot outside admission root -> ego-admission:path-outside-root",
+      "metadata.google.internal / 169.254.169.254 -> ego-admission:host-denied",
+      "ego_js page eval -> ego-admission:tool-disabled (same disabled set as cdp/cli/script/upload)"
+    ],
+    "blocker": {
+      "kind": "environment/runtime, not product-fence failure",
+      "detail": "headed launch fails inside dsh-host tool subprocess: 'browser did not come up on display win32-desktop' (chrome.mjs:603 fallback also fails; no Chrome process/DevToolsActivePort observed). Windows design forces headed (isHeadlessDetected(win32)=false; EGO_LINUX_PROFILE overrides refused by admission; profile fixed at %LOCALAPPDATA%\\ego-lite-linux).",
+      "control": "manual headed Chrome with ego DIRECT_NETWORK_FLAGS + ASCII user-data-dir comes up fine in same session; LOCALAPPDATA=task ASCII junction dir lets Chrome write crashpad caches but ego headed launch still fails",
+      "status": "investigating"
+    }
+  },
+  "remaining": [
+    "ego-browser: Chrome + Edge full probe pass (or honest env-not-run) after headed-launch fix",
+    "official remove -> preset/tools gone + package-owned Profile retained + restart, both candidates",
+    "graceful stop / controller-exit process (birth-match) final check; bt close idempotency already pass",
+    "T11-V (#42): four Skills full Manager lifecycle in fresh root (not started)",
+    "cleanup of task processes (task chrome/edge/hosts) + final redacted summary"
+  ],
+  "redactionNote": "shared materials project $TASK_ROOT/$USER_HOME; no account names, real user paths, window titles, tokens, cookies, profiles, or raw process command lines in shared docs"
+}
